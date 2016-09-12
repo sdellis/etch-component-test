@@ -10,6 +10,10 @@ namespace MyComponents {
             super.setup();
         }
 
+        update() {
+
+        }
+
         draw() {
             this.ctx.fillStyle = "#FF0000";
             this.ctx.fillRect(0, 0, 150, 150);
