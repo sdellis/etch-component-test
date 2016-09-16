@@ -23,8 +23,13 @@ declare namespace MyComponents {
 
 declare namespace MyComponents {
     class Main extends etch.drawing.Stage {
+        shapes: any[];
+        currentPos: any;
+        drawmode: boolean;
         constructor(maxDelta?: number);
         setup(): void;
+        toggleDrawMode(): void;
+        update(): void;
         draw(): void;
     }
 }

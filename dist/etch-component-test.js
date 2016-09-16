@@ -23,9 +23,9 @@ var MyComponents;
                 console.error("Component failed to initialise");
             }
             this.canvas = new Canvas();
-            this.canvas.style.backgroundColor = '#FFF';
-            this.canvas.width = 150;
-            this.canvas.height = 150;
+            this.canvas.style.backgroundColor = '#333';
+            this.canvas.width = 750;
+            this.canvas.height = 750;
             this.main = new MyComponents.Main();
             this.main.init(this.canvas);
             return success;
@@ -70,17 +70,52 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var MyComponents;
 (function (MyComponents) {
+    // declare var shapes = [];
     var Main = (function (_super) {
         __extends(Main, _super);
         function Main(maxDelta) {
             _super.call(this, maxDelta);
+            this.drawmode = false;
         }
         Main.prototype.setup = function () {
+            var _this = this;
             _super.prototype.setup.call(this);
+            this.shapes = [];
+            this.currentPos = { x: 0, y: 0 };
+            this.position = null;
+            this.stage.mousePos.x = 0;
+            this.stage.mousePos.y = 0;
+            this.canvas.htmlElement.addEventListener('mousedown', function (e) {
+                _this.mousePos = _this.stage.mousePos.clone();
+                console.log('mouseX: ', _this.mousePos.x, ' mouseY: ', _this.mousePos.y);
+                _this.toggleDrawMode();
+                if (_this.drawmode) {
+                    _this.currentPos.x = _this.mousePos.x;
+                    _this.currentPos.y = _this.mousePos.y;
+                }
+                else {
+                    var rectangle = new Path2D();
+                    rectangle.rect(_this.currentPos.x, _this.currentPos.y, _this.mousePos.x - _this.currentPos.x, _this.mousePos.y - _this.currentPos.y);
+                    _this.shapes.push(rectangle);
+                }
+            }, false);
+        };
+        Main.prototype.toggleDrawMode = function () {
+            this.drawmode = !this.drawmode;
+        };
+        Main.prototype.update = function () {
         };
         Main.prototype.draw = function () {
-            this.ctx.fillStyle = "#FF0000";
-            this.ctx.fillRect(0, 0, 150, 150);
+            this.ctx.strokeStyle = "#FF0000";
+            for (var i = 0; i < this.shapes.length; i++) {
+                var myShape = this.shapes[i];
+                this.ctx.stroke(myShape);
+            }
+            if (this.drawmode) {
+                var rectangle = new Path2D();
+                rectangle.rect(this.currentPos.x, this.currentPos.y, this.mousePos.x - this.currentPos.x, this.mousePos.y - this.currentPos.y);
+                this.ctx.stroke(rectangle);
+            }
         };
         return Main;
     }(etch.drawing.Stage));

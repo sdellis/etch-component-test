@@ -5,29 +5,30 @@
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="css/etch-component-test.css" />
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/base-component.bundle.js"></script>
     <script type="text/javascript" src="js/etch.bundle.js"></script>
-    <script src="js/etch-component-test.bundle.js"></script>
+    <script src="js/etch-component-test.js"></script>
 </head>
 <body>
-    
+
     <div id="component"></div>
 
     <script>
 
         var component;
-        
+
         $(function() {
 
             component = new MyComponents.EtchComponent({
                 element: "#component"
             });
-            
+
             component.on('test', function(args) {
-                alert(args);
+                console.log(args);
             });
-            
+
             component.test();
-            
+
         });
     </script>
 </body>
