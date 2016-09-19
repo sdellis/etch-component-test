@@ -5,8 +5,11 @@ namespace MyComponents {
     export class Main extends etch.drawing.Stage{
 
         public shapes: any[];
+        public shape: any;
+        public rectangle: any;
         public currentPos: any;
         public drawmode: boolean = false;
+        shapeCompleted = new nullstone.Event<string>(); // svg of completed shape
 
         constructor(maxDelta?: number){
             super(maxDelta);
@@ -24,12 +27,15 @@ namespace MyComponents {
                 console.log('mouseX: ', this.mousePos.x, ' mouseY: ', this.mousePos.y);
                 this.toggleDrawMode();
                 if (this.drawmode){
+                  // set the anchor point on first click
                   this.currentPos.x = this.mousePos.x;
                   this.currentPos.y = this.mousePos.y;
                 }else{
-                  var rectangle = new Path2D();
-                  rectangle.rect(this.currentPos.x, this.currentPos.y, this.mousePos.x - this.currentPos.x, this.mousePos.y - this.currentPos.y);
-                  this.shapes.push(rectangle);
+                  // finish the shape on second click and store it.
+                  this.rectangle = new Path2D();
+                  this.rectangle.rect(this.currentPos.x, this.currentPos.y, this.mousePos.x - this.currentPos.x, this.mousePos.y - this.currentPos.y);
+                  this.shapeCompleted.raise(this, "foobar"); // publish event
+                  this.shapes.push(this.rectangle);
                 }
 
             }, false);
@@ -40,7 +46,9 @@ namespace MyComponents {
         }
 
         update() {
-
+          // redraw the shape in each frame as the mouse moves
+          this.rectangle = new Path2D();
+          this.rectangle.rect(this.currentPos.x, this.currentPos.y, this.mousePos.x - this.currentPos.x, this.mousePos.y - this.currentPos.y);
         }
 
         draw() {
@@ -52,9 +60,7 @@ namespace MyComponents {
             }
 
             if(this.drawmode){
-              var rectangle = new Path2D();
-              rectangle.rect(this.currentPos.x, this.currentPos.y, this.mousePos.x - this.currentPos.x, this.mousePos.y - this.currentPos.y);
-              this.ctx.stroke(rectangle);
+              this.ctx.stroke(this.rectangle);
             }
 
         }

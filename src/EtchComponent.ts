@@ -30,6 +30,10 @@ namespace MyComponents {
             this.main = new Main();
             this.main.init(this.canvas);
 
+            this.main.shapeCompleted.on((s, svg) => {
+                this._emit(EtchComponent.Events.SHAPECOMPLETED, [svg]);
+            }, this);
+
             return success;
         }
 
@@ -47,6 +51,7 @@ namespace MyComponents {
 namespace MyComponents.EtchComponent {
     export class Events {
         static TEST: string = 'test';
+        static SHAPECOMPLETED: string = 'shapeCompleted';
     }
 }
 
