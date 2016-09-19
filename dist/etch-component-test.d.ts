@@ -32,6 +32,7 @@ declare namespace MyComponents {
         shapeCompleted: nullstone.Event<string>;
         constructor(maxDelta?: number);
         setup(): void;
+        drawRect(r: any): void;
         toggleDrawMode(): void;
         update(): void;
         draw(): void;
