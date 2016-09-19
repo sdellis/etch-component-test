@@ -102,29 +102,30 @@ var MyComponents;
                 }
                 else {
                     // finish the shape on second click and store it.
-                    _this.rectangle = new Path2D();
-                    _this.rectangle.rect(_this.currentPos.x, _this.currentPos.y, _this.mousePos.x - _this.currentPos.x, _this.mousePos.y - _this.currentPos.y);
-                    _this.shapeCompleted.raise(_this, "foobar"); // publish event
-                    _this.shapes.push(_this.rectangle);
+                    _this.rectangle = { x: _this.currentPos.x, y: _this.currentPos.y, w: _this.mousePos.x - _this.currentPos.x, h: _this.mousePos.y - _this.currentPos.y };
+                    _this.drawRect(_this.rectangle);
                 }
             }, false);
+        };
+        Main.prototype.drawRect = function (r) {
+            this.shapes.push(r);
+            this.shapeCompleted.raise(this, "rectangle complete"); // publish event
         };
         Main.prototype.toggleDrawMode = function () {
             this.drawmode = !this.drawmode;
         };
         Main.prototype.update = function () {
             // redraw the shape in each frame as the mouse moves
-            this.rectangle = new Path2D();
-            this.rectangle.rect(this.currentPos.x, this.currentPos.y, this.mousePos.x - this.currentPos.x, this.mousePos.y - this.currentPos.y);
+            this.rectangle = { x: this.currentPos.x, y: this.currentPos.y, w: this.mousePos.x - this.currentPos.x, h: this.mousePos.y - this.currentPos.y };
         };
         Main.prototype.draw = function () {
             this.ctx.strokeStyle = "#FF0000";
             for (var i = 0; i < this.shapes.length; i++) {
                 var myShape = this.shapes[i];
-                this.ctx.stroke(myShape);
+                this.ctx.strokeRect(myShape.x, myShape.y, myShape.w, myShape.h);
             }
             if (this.drawmode) {
-                this.ctx.stroke(this.rectangle);
+                this.ctx.strokeRect(this.rectangle.x, this.rectangle.y, this.rectangle.w, this.rectangle.h);
             }
         };
         return Main;
