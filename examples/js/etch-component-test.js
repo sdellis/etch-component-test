@@ -18,6 +18,7 @@ var MyComponents;
             this._emit(EtchComponent.Events.TEST, [1, 2, 'three']);
         };
         EtchComponent.prototype._init = function () {
+            var _this = this;
             var success = _super.prototype._init.call(this);
             if (!success) {
                 console.error("Component failed to initialise");
@@ -28,6 +29,9 @@ var MyComponents;
             this.canvas.height = 750;
             this.main = new MyComponents.Main();
             this.main.init(this.canvas);
+            this.main.shapeCompleted.on(function (s, svg) {
+                _this._emit(EtchComponent.Events.SHAPECOMPLETED, [svg]);
+            }, this);
             return success;
         };
         EtchComponent.prototype._getDefaultOptions = function () {
@@ -47,6 +51,7 @@ var MyComponents;
             function Events() {
             }
             Events.TEST = 'test';
+            Events.SHAPECOMPLETED = 'shapeCompleted';
             return Events;
         }());
         EtchComponent.Events = Events;
@@ -76,6 +81,7 @@ var MyComponents;
         function Main(maxDelta) {
             _super.call(this, maxDelta);
             this.drawmode = false;
+            this.shapeCompleted = new nullstone.Event(); // svg of completed shape
         }
         Main.prototype.setup = function () {
             var _this = this;
@@ -90,13 +96,16 @@ var MyComponents;
                 console.log('mouseX: ', _this.mousePos.x, ' mouseY: ', _this.mousePos.y);
                 _this.toggleDrawMode();
                 if (_this.drawmode) {
+                    // set the anchor point on first click
                     _this.currentPos.x = _this.mousePos.x;
                     _this.currentPos.y = _this.mousePos.y;
                 }
                 else {
-                    var rectangle = new Path2D();
-                    rectangle.rect(_this.currentPos.x, _this.currentPos.y, _this.mousePos.x - _this.currentPos.x, _this.mousePos.y - _this.currentPos.y);
-                    _this.shapes.push(rectangle);
+                    // finish the shape on second click and store it.
+                    _this.rectangle = new Path2D();
+                    _this.rectangle.rect(_this.currentPos.x, _this.currentPos.y, _this.mousePos.x - _this.currentPos.x, _this.mousePos.y - _this.currentPos.y);
+                    _this.shapeCompleted.raise(_this, "foobar"); // publish event
+                    _this.shapes.push(_this.rectangle);
                 }
             }, false);
         };
@@ -104,6 +113,9 @@ var MyComponents;
             this.drawmode = !this.drawmode;
         };
         Main.prototype.update = function () {
+            // redraw the shape in each frame as the mouse moves
+            this.rectangle = new Path2D();
+            this.rectangle.rect(this.currentPos.x, this.currentPos.y, this.mousePos.x - this.currentPos.x, this.mousePos.y - this.currentPos.y);
         };
         Main.prototype.draw = function () {
             this.ctx.strokeStyle = "#FF0000";
@@ -112,9 +124,7 @@ var MyComponents;
                 this.ctx.stroke(myShape);
             }
             if (this.drawmode) {
-                var rectangle = new Path2D();
-                rectangle.rect(this.currentPos.x, this.currentPos.y, this.mousePos.x - this.currentPos.x, this.mousePos.y - this.currentPos.y);
-                this.ctx.stroke(rectangle);
+                this.ctx.stroke(this.rectangle);
             }
         };
         return Main;
